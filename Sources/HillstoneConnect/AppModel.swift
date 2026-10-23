@@ -234,7 +234,7 @@ final class AppModel: ObservableObject {
     @Published var isDownloadingUpdate = false
     @Published var showingProfileEditor = false
     var appVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.3.15"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.3.16"
     }
     var appBuild: String? {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
@@ -937,7 +937,10 @@ final class AppModel: ObservableObject {
             }
             return
         }
-        let message = Self.friendlyDisconnectMessage(error)
+        let message = Self.friendlyDisconnectMessage(
+            error,
+            udpPacingEnabled: profile.udpPacingEnabled
+        )
         let needsAttention = Self.requiresImmediateAttention(error)
         connectionError = message
         Self.eventLogger.append("error", message)
@@ -1311,7 +1314,10 @@ final class AppModel: ObservableObject {
         ].contains { message.contains($0) }
     }
 
-    static func friendlyDisconnectMessage(_ error: Error) -> String {
+    static func friendlyDisconnectMessage(
+        _ error: Error,
+        udpPacingEnabled: Bool = false
+    ) -> String {
         let nsError = error as NSError
         if nsError.domain == NEVPNConnectionErrorDomain {
             switch nsError.code {
@@ -1328,6 +1334,9 @@ final class AppModel: ObservableObject {
             }
         }
         if nsError.domain.contains("HillstonePacketTunnel") {
+            if udpPacingEnabled {
+                return "UDP 数据通道连续探测未收到响应；手机热点可能限制 UDP。请关闭“UDP Pacing 加速”切换到自动/TCP；正在低频重试，本机网络未被接管。"
+            }
             return "VPN 数据通道未通过可达性检查，正在重试；本机网络未被接管。"
         }
         let message = nsError.localizedDescription

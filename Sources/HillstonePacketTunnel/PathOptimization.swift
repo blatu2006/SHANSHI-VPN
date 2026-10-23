@@ -184,6 +184,24 @@ enum DPLPMTUDPlan {
     }
 }
 
+enum UDPDataPathProbePolicy {
+    /// Cellular hotspots and carrier NATs commonly discard the first outbound
+    /// UDP datagram while creating a mapping. Use distinct ESP sequence
+    /// numbers for a small initial burst so one lost packet does not reject an
+    /// otherwise usable tunnel.
+    static let initialBurstCount = 3
+    static let initialResponseTimeout: TimeInterval = 1.5
+    static let subsequentResponseTimeout: TimeInterval = 0.75
+
+    static func burstCount(forCandidateAt index: Int) -> Int {
+        index == 0 ? initialBurstCount : 1
+    }
+
+    static func responseTimeout(forCandidateAt index: Int) -> TimeInterval {
+        index == 0 ? initialResponseTimeout : subsequentResponseTimeout
+    }
+}
+
 enum IPv4ICMPEchoProbe {
     static func request(
         sourceAddress: String,

@@ -62,6 +62,8 @@ func packetTunnelErrorsUseAnActionableMessage() {
     )
     #expect(AppModel.friendlyDisconnectMessage(error)
         == "VPN 数据通道未通过可达性检查，正在重试；本机网络未被接管。")
+    #expect(AppModel.friendlyDisconnectMessage(error, udpPacingEnabled: true)
+        == "UDP 数据通道连续探测未收到响应；手机热点可能限制 UDP。请关闭“UDP Pacing 加速”切换到自动/TCP；正在低频重试，本机网络未被接管。")
 }
 
 @Test @MainActor

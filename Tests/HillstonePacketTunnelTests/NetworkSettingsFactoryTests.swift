@@ -171,6 +171,13 @@ import Testing
     ])
 }
 
+@Test func udpProbeWarmsCarrierNATWithoutBurstingEveryMTUCandidate() {
+    #expect(UDPDataPathProbePolicy.burstCount(forCandidateAt: 0) == 3)
+    #expect(UDPDataPathProbePolicy.burstCount(forCandidateAt: 1) == 1)
+    #expect(UDPDataPathProbePolicy.initialResponseTimeout == 1.5)
+    #expect(UDPDataPathProbePolicy.subsequentResponseTimeout == 0.75)
+}
+
 @Test func icmpPathProbeBuildsAndMatchesAnEchoExchange() throws {
     let identifier: UInt16 = 0x1234
     let sequence: UInt16 = 7

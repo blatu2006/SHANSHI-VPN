@@ -32,7 +32,7 @@ private enum TunnelError: Error, LocalizedError {
         case .certificatePinMismatch: "VPN 网关证书与首次连接时保存的指纹不一致"
         case .dataChannelUnavailable: "TLS 登录成功，但数据通道不可达"
         case .udpDataPathUnreachable:
-            "UDP 数据通道未收到网关响应；VPN 路由和 DNS 未启用。请关闭 UDP Pacing，或改用自动/TCP 数据通道"
+            "UDP 数据通道连续探测未收到网关响应；VPN 路由和 DNS 未启用。请关闭 UDP Pacing，或改用自动/TCP 数据通道"
         case .tcpDataPortUnavailable: "网关未下发 TCP 数据端口，无法使用 TCP 稳定模式"
         case let .chinaRouteCatalogUnavailable(message): "无法加载国内直连地址库：\(message)"
         case let .networkChanged(kind): "底层网络已切换为\(kind.title)，正在重新连接"
@@ -1243,8 +1243,14 @@ public final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Send
             ) else { break }
             do {
                 let started = DispatchTime.now().uptimeNanoseconds
-                try await channel.sendBatch([try codec.seal(request, nextHeader: 4)])
-                let replies = try await channel.receiveBatch(timeout: 0.5)
+                let burstCount = UDPDataPathProbePolicy.burstCount(forCandidateAt: index)
+                let probes = try (0..<burstCount).map { _ in
+                    try codec.seal(request, nextHeader: 4)
+                }
+                try await channel.sendBatch(probes)
+                let replies = try await channel.receiveBatch(
+                    timeout: UDPDataPathProbePolicy.responseTimeout(forCandidateAt: index)
+                )
                 let matched = try replies.contains { datagram in
                     let opened = try codec.open(datagram)
                     return opened.nextHeader == 4
