@@ -55,6 +55,13 @@ func reconnectBackoffStartsFastAndRemainsBounded() {
 }
 
 @Test @MainActor
+func disablingUDPPacingRestoresAutomaticFallback() {
+    #expect(AppModel.dataTransportAfterTogglingUDPPacing(enabled: true, current: .automatic) == .udp)
+    #expect(AppModel.dataTransportAfterTogglingUDPPacing(enabled: false, current: .udp) == .automatic)
+    #expect(AppModel.dataTransportAfterTogglingUDPPacing(enabled: false, current: .tcp) == .tcp)
+}
+
+@Test @MainActor
 func packetTunnelErrorsUseAnActionableMessage() {
     let error = NSError(
         domain: "HillstonePacketTunnel.(unknown context).TunnelError",

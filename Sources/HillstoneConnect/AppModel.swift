@@ -234,7 +234,7 @@ final class AppModel: ObservableObject {
     @Published var isDownloadingUpdate = false
     @Published var showingProfileEditor = false
     var appVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.3.16"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.3.17"
     }
     var appBuild: String? {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
@@ -986,6 +986,14 @@ final class AppModel: ObservableObject {
         // System Extension several times per second.
         let delays = [500, 1_000, 2_000, 30_000, 60_000]
         return delays[min(max(attempt - 1, 0), delays.count - 1)]
+    }
+
+    static func dataTransportAfterTogglingUDPPacing(
+        enabled: Bool,
+        current: ConnectionProfile.DataTransport
+    ) -> ConnectionProfile.DataTransport {
+        if enabled { return .udp }
+        return current == .udp ? .automatic : current
     }
 
     private func scheduleReconnect(reason: String, fastFirstAttempt: Bool = false) {

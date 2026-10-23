@@ -533,9 +533,10 @@ struct SettingsView: View {
             .appPage()
             .onChange(of: model.profile.automaticallyReconnects) { _, _ in model.saveProfile() }
             .onChange(of: model.profile.udpPacingEnabled) { _, enabled in
-                if enabled {
-                    model.profile.dataTransport = .udp
-                }
+                model.profile.dataTransport = AppModel.dataTransportAfterTogglingUDPPacing(
+                    enabled: enabled,
+                    current: model.profile.dataTransport
+                )
                 model.saveProfile()
             }
             .onChange(of: model.profile.usesTunnelDNS) { _, _ in model.saveProfile() }
