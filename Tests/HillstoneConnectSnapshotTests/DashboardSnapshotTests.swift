@@ -48,8 +48,20 @@ func reconnectBackoffStartsFastAndRemainsBounded() {
     #expect(AppModel.reconnectDelayMilliseconds(forAttempt: 1) == 500)
     #expect(AppModel.reconnectDelayMilliseconds(forAttempt: 2) == 1_000)
     #expect(AppModel.reconnectDelayMilliseconds(forAttempt: 3) == 2_000)
-    #expect(AppModel.reconnectDelayMilliseconds(forAttempt: 20) == 30_000)
+    #expect(AppModel.reconnectDelayMilliseconds(forAttempt: 4) == 30_000)
+    #expect(AppModel.reconnectDelayMilliseconds(forAttempt: 5) == 60_000)
+    #expect(AppModel.reconnectDelayMilliseconds(forAttempt: 20) == 60_000)
     #expect(AppModel.reconnectDelayMilliseconds(forAttempt: 1, fastFirstAttempt: true) == 1_500)
+}
+
+@Test @MainActor
+func packetTunnelErrorsUseAnActionableMessage() {
+    let error = NSError(
+        domain: "HillstonePacketTunnel.(unknown context).TunnelError",
+        code: 11
+    )
+    #expect(AppModel.friendlyDisconnectMessage(error)
+        == "VPN 数据通道未通过可达性检查，正在重试；本机网络未被接管。")
 }
 
 @Test @MainActor

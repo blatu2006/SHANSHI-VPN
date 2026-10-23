@@ -234,7 +234,7 @@ final class AppModel: ObservableObject {
     @Published var isDownloadingUpdate = false
     @Published var showingProfileEditor = false
     var appVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.3.14"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.3.15"
     }
     var appBuild: String? {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
@@ -802,13 +802,12 @@ final class AppModel: ObservableObject {
                 return
             }
             reconnectTask?.cancel(); reconnectTask = nil
-            reconnectAttempt = 0
-            requiresFreshPathOptimization = false
-            stage = .connected
-            providerRecoveryInProgress = false
-            connectionError = nil
-            connectionAlert = nil
-            connectionWasUserInitiated = false
+            // NEVPNStatus.connected can arrive before the provider's
+            // startTunnel completion and can therefore be followed by an
+            // immediate establishment error. Keep showing the handshake state
+            // until the provider confirms that routes and the data channel are
+            // actually active through its runtime snapshot.
+            if stage != .connected { stage = .securingControlChannel }
             lastProviderResponseAt = Date()
             if tickerTask == nil { startTicker() }
             requestRuntimeStats()
@@ -908,6 +907,10 @@ final class AppModel: ObservableObject {
                     }
                     activeRoutes = object["routes"] as? [String] ?? []
                     dnsServers = object["dnsServers"] as? [String] ?? []
+                    let providerReady = (object["ready"] as? NSNumber)?.boolValue ?? false
+                    if providerReady, routeCount > 0, !activeDataTransport.isEmpty {
+                        markProviderReady()
+                    }
                     if let fingerprint = object["certificateFingerprint"] as? String,
                        !fingerprint.isEmpty {
                         certificateFingerprint = fingerprint
@@ -975,7 +978,10 @@ final class AppModel: ObservableObject {
 
     static func reconnectDelayMilliseconds(forAttempt attempt: Int, fastFirstAttempt: Bool = false) -> Int {
         if fastFirstAttempt && attempt <= 1 { return 1_500 }
-        let delays = [500, 1_000, 2_000, 4_000, 8_000, 15_000, 30_000]
+        // Give transient failures three quick retries. A persistent gateway or
+        // UDP-path failure then backs off aggressively instead of cycling the
+        // System Extension several times per second.
+        let delays = [500, 1_000, 2_000, 30_000, 60_000]
         return delays[min(max(attempt - 1, 0), delays.count - 1)]
     }
 
@@ -1305,7 +1311,7 @@ final class AppModel: ObservableObject {
         ].contains { message.contains($0) }
     }
 
-    private static func friendlyDisconnectMessage(_ error: Error) -> String {
+    static func friendlyDisconnectMessage(_ error: Error) -> String {
         let nsError = error as NSError
         if nsError.domain == NEVPNConnectionErrorDomain {
             switch nsError.code {
@@ -1321,6 +1327,9 @@ final class AppModel: ObservableObject {
             default: break
             }
         }
+        if nsError.domain.contains("HillstonePacketTunnel") {
+            return "VPN 数据通道未通过可达性检查，正在重试；本机网络未被接管。"
+        }
         let message = nsError.localizedDescription
         let lower = message.lowercased()
         if lower.contains("certificate") || message.contains("证书") { return "VPN 网关证书或证书指纹不匹配。" }
@@ -1330,6 +1339,26 @@ final class AppModel: ObservableObject {
         }
         if lower.contains("timed out") || message.contains("超时") { return "VPN 网关响应超时。" }
         return message
+    }
+
+    private func markProviderReady() {
+        guard wantsConnection,
+              tunnelManager?.connection.status == .connected else { return }
+        let wasReady = stage == .connected
+        reconnectTask?.cancel(); reconnectTask = nil
+        reconnectAttempt = 0
+        requiresFreshPathOptimization = false
+        stage = .connected
+        providerRecoveryInProgress = false
+        connectionError = nil
+        connectionAlert = nil
+        connectionWasUserInitiated = false
+        if !wasReady {
+            Self.eventLogger.append(
+                "provider",
+                "runtime readiness confirmed; transport=\(activeDataTransport), routes=\(routeCount)"
+            )
+        }
     }
 
     private static func requiresImmediateAttention(_ error: Error) -> Bool {

@@ -818,7 +818,9 @@ public final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Send
         let livePacingQueueDelay = dataChannel?.udpPacingQueueDelayMilliseconds
         statsLock.lock()
         let sequenceSnapshot = sequenceTracker.snapshot
+        let providerReady = startedAt != nil
         var snapshot: [String: Any] = [
+            "ready": providerReady,
             "sent": sentBytes, "received": receivedBytes,
             "wireSent": wireSentBytes, "wireReceived": wireReceivedBytes,
             "sentPackets": sentPackets, "receivedPackets": receivedPackets,
