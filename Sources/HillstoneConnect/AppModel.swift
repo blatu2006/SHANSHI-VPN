@@ -234,13 +234,14 @@ final class AppModel: ObservableObject {
     @Published var isDownloadingUpdate = false
     @Published var showingProfileEditor = false
     var appVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.3.13"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.3.14"
     }
     var appBuild: String? {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
     }
     private var tickerTask: Task<Void, Never>?
     private var reconnectTask: Task<Void, Never>?
+    private var tunnelStartStatusTask: Task<Void, Never>?
     private var tunnelManager: NETunnelProviderManager?
     private var statusObserver: NSObjectProtocol?
     private var lifecycleObservers: [NSObjectProtocol] = []
@@ -628,6 +629,7 @@ final class AppModel: ObservableObject {
     private func invalidateConnectionOperations(reason: String) {
         connectionOperationID &+= 1
         isStartingTunnel = false
+        tunnelStartStatusTask?.cancel(); tunnelStartStatusTask = nil
         Self.eventLogger.append(
             "connection",
             "invalidated pending connection callbacks (\(reason)), operation=\(connectionOperationID)"
@@ -741,7 +743,12 @@ final class AppModel: ObservableObject {
                                 "connection",
                                 "startVPNTunnel returned without throwing, operation=\(operationID)"
                             )
-                            isStartingTunnel = false
+                            // startVPNTunnel can be followed by a stale
+                            // .disconnected value from a concurrent manager
+                            // reload. Keep the start guard until NetworkExtension
+                            // reports .connecting/.connected, then expire it if
+                            // no status transition arrives.
+                            scheduleTunnelStartStatusCheck(operationID: operationID)
                             stage = .securingControlChannel
                         } catch {
                             Self.eventLogger.append("connection", "startVPNTunnel threw: \(error.localizedDescription)")
@@ -776,6 +783,8 @@ final class AppModel: ObservableObject {
                 excludedRouteCount = 0; chinaDirectRoutingActive = false
             }
         case .connecting:
+            tunnelStartStatusTask?.cancel(); tunnelStartStatusTask = nil
+            isStartingTunnel = false
             guard wantsConnection else {
                 Self.eventLogger.append("connection", "stopping unexpected connecting tunnel after cancellation")
                 tunnelManager?.connection.stopVPNTunnel()
@@ -784,6 +793,8 @@ final class AppModel: ObservableObject {
             }
             stage = .securingControlChannel
         case .connected:
+            tunnelStartStatusTask?.cancel(); tunnelStartStatusTask = nil
+            isStartingTunnel = false
             guard wantsConnection else {
                 Self.eventLogger.append("connection", "stopping unexpected connected tunnel after cancellation")
                 tunnelManager?.connection.stopVPNTunnel()
@@ -802,9 +813,13 @@ final class AppModel: ObservableObject {
             if tickerTask == nil { startTicker() }
             requestRuntimeStats()
         case .reasserting:
+            tunnelStartStatusTask?.cancel(); tunnelStartStatusTask = nil
+            isStartingTunnel = false
             zeroLiveRates()
             stage = .reconnecting
         case .disconnecting:
+            tunnelStartStatusTask?.cancel(); tunnelStartStatusTask = nil
+            isStartingTunnel = false
             zeroLiveRates()
             stage = wantsConnection ? .reconnecting : .idle
         @unknown default: stage = .failed
@@ -1129,6 +1144,23 @@ final class AppModel: ObservableObject {
                 self.loadTunnelManager(adoptSystemIntent: false)
             }
             self?.stateSynchronizationTask = nil
+        }
+    }
+
+    private func scheduleTunnelStartStatusCheck(operationID: UInt64) {
+        tunnelStartStatusTask?.cancel()
+        tunnelStartStatusTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(3))
+            guard let self, !Task.isCancelled,
+                  self.connectionOperationIsCurrent(operationID),
+                  self.isStartingTunnel else { return }
+            self.isStartingTunnel = false
+            self.tunnelStartStatusTask = nil
+            Self.eventLogger.append(
+                "connection",
+                "start status grace expired; reloading manager, operation=\(operationID)"
+            )
+            self.loadTunnelManager(adoptSystemIntent: false)
         }
     }
 

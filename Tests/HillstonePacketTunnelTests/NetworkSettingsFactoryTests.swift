@@ -217,20 +217,14 @@ import Testing
     #expect(!fresh.isFresh(at: Date(timeIntervalSince1970: 999), maximumAge: 200))
 }
 
-@Test func refreshedPhysicalPathRejectsARegressedDataProbe() {
-    #expect(PathOptimizationPolicy.shouldRejectRefreshedPath(
-        refreshRequested: true,
-        previousProbeWasSupported: true,
-        currentProbeSucceeded: false
-    ))
-    #expect(!PathOptimizationPolicy.shouldRejectRefreshedPath(
-        refreshRequested: false,
-        previousProbeWasSupported: true,
-        currentProbeSucceeded: false
-    ))
-    #expect(!PathOptimizationPolicy.shouldRejectRefreshedPath(
-        refreshRequested: true,
-        previousProbeWasSupported: false,
-        currentProbeSucceeded: false
-    ))
+@Test func failedUDPProbeFallsBackOnlyInAutomaticMode() {
+    #expect(PathOptimizationPolicy.failedUDPProbeAction(
+        requestedTransport: .automatic
+    ) == .fallBackToTCP)
+    #expect(PathOptimizationPolicy.failedUDPProbeAction(
+        requestedTransport: .udp
+    ) == .reject)
+    #expect(PathOptimizationPolicy.failedUDPProbeAction(
+        requestedTransport: .tcp
+    ) == .reject)
 }

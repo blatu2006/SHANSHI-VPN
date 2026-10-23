@@ -15,9 +15,9 @@
     <key>CFBundlePackageType</key>
     <string>SYSX</string>
     <key>CFBundleShortVersionString</key>
-	<string>1.3.13</string>
+	<string>1.3.14</string>
     <key>CFBundleVersion</key>
-	<string>20</string>
+	<string>21</string>
     <key>NetworkExtension</key>
     <dict>
         <key>NEProviderClasses</key>

@@ -25,16 +25,20 @@ struct PathOptimizationMemory: Codable, Equatable, Sendable {
 }
 
 enum PathOptimizationPolicy {
-    /// A data probe that worked on the previous physical network but fails
-    /// immediately after a network change indicates that the new path cannot
-    /// carry the selected data transport. Reject it before tunnel routes are
-    /// installed so the Mac remains fail-open.
-    static func shouldRejectRefreshedPath(
-        refreshRequested: Bool,
-        previousProbeWasSupported: Bool,
-        currentProbeSucceeded: Bool
-    ) -> Bool {
-        refreshRequested && previousProbeWasSupported && !currentProbeSucceeded
+    enum FailedUDPProbeAction: Equatable, Sendable {
+        case fallBackToTCP
+        case reject
+    }
+
+    /// Opening a UDP socket only proves that Network.framework accepted the
+    /// endpoint. It does not prove that ESP datagrams can make a round trip to
+    /// the gateway. Never install tunnel routes after a failed data probe.
+    /// Automatic mode can recover over TCP; an explicitly requested UDP path
+    /// must fail open so the Mac keeps its physical network and DNS.
+    static func failedUDPProbeAction(
+        requestedTransport: ConnectionProfile.DataTransport
+    ) -> FailedUDPProbeAction {
+        requestedTransport == .automatic ? .fallBackToTCP : .reject
     }
 }
 

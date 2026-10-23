@@ -16,6 +16,7 @@ private enum TunnelError: Error, LocalizedError {
     case connectionTimedOut, responseTimedOut
     case certificatePinMismatch
     case dataChannelUnavailable
+    case udpDataPathUnreachable
     case tcpDataPortUnavailable
     case chinaRouteCatalogUnavailable(String)
     case networkChanged(UnderlyingNetworkKind)
@@ -30,6 +31,8 @@ private enum TunnelError: Error, LocalizedError {
         case .responseTimedOut: "等待 VPN 网关响应超时"
         case .certificatePinMismatch: "VPN 网关证书与首次连接时保存的指纹不一致"
         case .dataChannelUnavailable: "TLS 登录成功，但数据通道不可达"
+        case .udpDataPathUnreachable:
+            "UDP 数据通道未收到网关响应；VPN 路由和 DNS 未启用。请关闭 UDP Pacing，或改用自动/TCP 数据通道"
         case .tcpDataPortUnavailable: "网关未下发 TCP 数据端口，无法使用 TCP 稳定模式"
         case let .chinaRouteCatalogUnavailable(message): "无法加载国内直连地址库：\(message)"
         case let .networkChanged(kind): "底层网络已切换为\(kind.title)，正在重新连接"
@@ -1112,28 +1115,23 @@ public final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Send
             }
         }
 
-        guard runtime.automaticMTU else {
-            return OpenedDataChannel(
-                channel: selectedChannel, discoveredMTU: nil, probeRTTMilliseconds: nil,
-                probeStatus: "已使用手动 MTU"
-            )
-        }
-
         let previousOptimization = PathOptimizationStore.shared.load(
             server: runtime.server,
             networkKind: networkKind
         )
-        if !runtime.refreshPathOptimization,
+        if runtime.automaticMTU,
+           !runtime.refreshPathOptimization,
            let cached = previousOptimization,
            cached.transport == selectedChannel.kind,
-           cached.mtu != nil || !cached.probeSupported {
+           cached.probeSupported,
+           cached.mtu != nil {
             return OpenedDataChannel(
                 channel: selectedChannel,
                 discoveredMTU: cached.mtu,
                 probeRTTMilliseconds: nil,
                 probeStatus: selectedChannel.kind == .tcp
                     ? "TCP 数据通道使用系统分段"
-                    : (cached.probeSupported ? "使用 24 小时路径缓存" : "网关不响应 MTU 探测")
+                    : "使用 24 小时路径缓存"
             )
         }
 
@@ -1157,17 +1155,43 @@ public final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Send
             codec: codec,
             sourceAddress: sourceAddress,
             destinationAddress: destinationAddress,
-            recommendedMTU: AdaptiveMTU.recommended(for: networkKind),
+            recommendedMTU: runtime.automaticMTU
+                ? AdaptiveMTU.recommended(for: networkKind)
+                : runtime.mtu,
             networkKind: networkKind
         )
-        if PathOptimizationPolicy.shouldRejectRefreshedPath(
-            refreshRequested: runtime.refreshPathOptimization,
-            previousProbeWasSupported: previousOptimization?.probeSupported == true,
-            currentProbeSucceeded: probe.supported
-        ) {
+        if !probe.supported {
             selectedChannel.cancel()
-            tunnelDebugLog.warning("fresh path failed a previously supported data probe")
-            throw TunnelError.dataChannelUnavailable
+            PathOptimizationStore.shared.save(
+                server: runtime.server, networkKind: networkKind,
+                transport: .udp, mtu: nil, probeSupported: false
+            )
+            switch PathOptimizationPolicy.failedUDPProbeAction(
+                requestedTransport: runtime.dataTransport
+            ) {
+            case .fallBackToTCP:
+                tunnelDebugLog.warning("UDP data probe failed; falling back to TCP before installing routes")
+                let fallback = try tcp()
+                let verifiedTCP: any TunnelDataChannel
+                do { verifiedTCP = try await started(fallback) }
+                catch {
+                    fallback.cancel()
+                    throw TunnelError.dataChannelUnavailable
+                }
+                PathOptimizationStore.shared.save(
+                    server: runtime.server, networkKind: verifiedTCP.networkKind,
+                    transport: .tcp, mtu: nil, probeSupported: false
+                )
+                return OpenedDataChannel(
+                    channel: verifiedTCP,
+                    discoveredMTU: nil,
+                    probeRTTMilliseconds: nil,
+                    probeStatus: "UDP 数据探测失败，已回退 TCP"
+                )
+            case .reject:
+                tunnelDebugLog.warning("UDP data probe failed; rejecting unverified forced UDP path")
+                throw TunnelError.udpDataPathUnreachable
+            }
         }
         var finalChannel = selectedChannel
         if probe.requiresFreshChannel {
@@ -1182,11 +1206,11 @@ public final class PacketTunnelProvider: NEPacketTunnelProvider, @unchecked Send
         )
         return OpenedDataChannel(
             channel: finalChannel,
-            discoveredMTU: probe.bestMTU,
+            discoveredMTU: runtime.automaticMTU ? probe.bestMTU : nil,
             probeRTTMilliseconds: probe.rttMilliseconds,
-            probeStatus: probe.supported
+            probeStatus: runtime.automaticMTU
                 ? "已探测到安全 MTU \(probe.bestMTU ?? DPLPMTUDPlan.baseMTU)"
-                : "网关不响应 MTU 探测"
+                : "UDP 数据通道可达，使用手动 MTU \(runtime.mtu)"
         )
     }
 
