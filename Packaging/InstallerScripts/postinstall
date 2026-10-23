@@ -1,0 +1,22 @@
+#!/bin/zsh
+
+APP_PATH="/Applications/NLVC VPN.app"
+CONSOLE_USER=$(/usr/bin/stat -f '%Su' /dev/console)
+RECONNECT_MARKER='/private/var/tmp/com.linlu.hillstoneconnect.reconnect-after-install'
+
+if [[ -d "$APP_PATH" && -n "$CONSOLE_USER" && "$CONSOLE_USER" != "root" ]]; then
+    CONSOLE_UID=$(/usr/bin/id -u "$CONSOLE_USER")
+    if [[ -f "$RECONNECT_MARKER" ]]; then
+        /bin/launchctl asuser "$CONSOLE_UID" \
+            /usr/bin/sudo -u "$CONSOLE_USER" \
+            /usr/bin/open -n "$APP_PATH" --args --reconnect-after-update >/dev/null 2>&1 || true
+    else
+        /bin/launchctl asuser "$CONSOLE_UID" \
+            /usr/bin/sudo -u "$CONSOLE_USER" \
+            /usr/bin/open -n "$APP_PATH" >/dev/null 2>&1 || true
+    fi
+fi
+
+/bin/rm -f "$RECONNECT_MARKER"
+
+exit 0

@@ -1,0 +1,75 @@
+#!/bin/zsh
+
+set -u
+
+LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
+CONSOLE_USER="$(/usr/bin/stat -f '%Su' /dev/console)"
+CONSOLE_UID="$(/usr/bin/id -u "$CONSOLE_USER")"
+USER_HOME="$(/usr/bin/dscl . -read "/Users/$CONSOLE_USER" NFSHomeDirectory | /usr/bin/awk '{print $2}')"
+PROJECT_DIR="$USER_HOME/hillstone"
+STAMP="$(/bin/date +%Y%m%d-%H%M%S)"
+QUARANTINE="/private/tmp/NLVC-VPN-old-versions-$STAMP"
+
+/bin/mkdir -p "$QUARANTINE"
+
+unregister_apps_below() {
+    local root="$1"
+    [[ -e "$root" ]] || return 0
+    /usr/bin/find "$root" -type d -name '*.app' -print0 2>/dev/null |
+        while IFS= read -r -d '' app; do
+            "$LSREGISTER" -u "$app" >/dev/null 2>&1 || true
+        done
+}
+
+quarantine() {
+    local source="$1"
+    local label="$2"
+    [[ -e "$source" ]] || return 0
+    unregister_apps_below "$source"
+    /bin/mv "$source" "$QUARANTINE/$label"
+}
+
+# Stop every old process and dismiss any queued Keychain authorization sheet.
+/usr/bin/killall 'NLVC VPN' >/dev/null 2>&1 || true
+/usr/bin/killall SecurityAgent >/dev/null 2>&1 || true
+
+# Root-owned backups created by earlier installers.
+quarantine "/Users/Shared/NLVC VPN Backups" "installer-backups.disabled"
+
+# Generated build products can be registered by Xcode/LaunchServices even when
+# they were never copied to /Applications. Keep source files; isolate products.
+quarantine "$PROJECT_DIR/.build" "project-build-products.disabled"
+quarantine "$USER_HOME/Library/Developer/Xcode/DerivedData/HillstoneConnect-bxtmfmdifupbllakflobasegmnaz" "xcode-derived-data.disabled"
+quarantine "$PROJECT_DIR/dist/NLVC VPN.app" "dist-current-app-copy.disabled"
+quarantine "$PROJECT_DIR/dist/release-1.3.1" "release-1.3.1.disabled"
+quarantine "$PROJECT_DIR/dist/release-1.3.2" "release-1.3.2.disabled"
+quarantine "$PROJECT_DIR/dist/release-1.3.3" "release-1.3.3.disabled"
+quarantine "$PROJECT_DIR/dist/release-1.3.4" "release-1.3.4.disabled"
+quarantine "$PROJECT_DIR/dist/archive" "dist-archive.disabled"
+quarantine "$PROJECT_DIR/dist/NLVC-VPN-1.2.0.pkg" "NLVC-VPN-1.2.0.pkg.disabled"
+quarantine "$PROJECT_DIR/dist/NLVC-VPN-1.3.0-local.pkg" "NLVC-VPN-1.3.0-local.pkg.disabled"
+quarantine "$PROJECT_DIR/dist/NLVC-VPN-1.3.5-local.pkg" "NLVC-VPN-1.3.5-local.pkg.disabled"
+
+# Old packages received through WeChat are also launchable installers.
+WECHAT_FILES="$USER_HOME/Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files/dowell_500d/msg/file/2026-10"
+quarantine "$WECHAT_FILES/NLVC-VPN-1.2.0.pkg" "wechat-NLVC-VPN-1.2.0.pkg.disabled"
+quarantine "$WECHAT_FILES/NLVC-VPN-1.3.0-local.pkg" "wechat-NLVC-VPN-1.3.0-local.pkg.disabled"
+
+# Remove only the legacy credential item. The AES-GCM files used by 1.3.13 are
+# intentionally preserved in the app container.
+/bin/launchctl asuser "$CONSOLE_UID" /usr/bin/sudo -u "$CONSOLE_USER" \
+    /usr/bin/security delete-generic-password \
+    -s 'com.local.hillstone-connect.credentials' >/dev/null 2>&1 || true
+
+# Forget obsolete receipts while retaining com.linlu.hillstoneconnect.local.
+/usr/sbin/pkgutil --forget com.linlu.hillstoneconnect >/dev/null 2>&1 || true
+/usr/sbin/pkgutil --forget com.linlu.hillstoneconnect.debug >/dev/null 2>&1 || true
+
+# Register only the installed 1.3.13 application for this product.
+if [[ -d '/Applications/NLVC VPN.app' ]]; then
+    "$LSREGISTER" -f -R -trusted '/Applications/NLVC VPN.app' >/dev/null 2>&1 || true
+    /usr/sbin/chown -R "$CONSOLE_USER":staff "$QUARANTINE" >/dev/null 2>&1 || true
+    /bin/launchctl asuser "$CONSOLE_UID" /usr/bin/open -n '/Applications/NLVC VPN.app' || true
+fi
+
+exit 0

@@ -1,0 +1,44 @@
+#!/bin/zsh
+
+# An in-place upgrade must not leave the previous executable running from its
+# now-replaced bundle. Stop the configured tunnel first, ask the GUI to quit,
+# and terminate only this product's remaining process before replacing files.
+RECONNECT_MARKER='/private/var/tmp/com.linlu.hillstoneconnect.reconnect-after-install'
+/bin/rm -f "$RECONNECT_MARKER"
+
+# The localizedDescription is the profile name (for example “公司网络”), not
+# the product name. Resolve every matching service by its stable UUID so a
+# renamed profile cannot leave the old System Extension running during upgrade.
+/usr/sbin/scutil --nc list | /usr/bin/awk '/com\.linlu\.hillstoneconnect/ {
+    for (i = 1; i <= NF; i++) {
+        if ($i ~ /^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$/) print $i
+    }
+}' | while IFS= read -r SERVICE_ID; do
+    [[ -n "$SERVICE_ID" ]] || continue
+    if /usr/sbin/scutil --nc status "$SERVICE_ID" 2>/dev/null | /usr/bin/head -1 | /usr/bin/grep -q '^Connected$'; then
+        /usr/bin/touch "$RECONNECT_MARKER"
+    fi
+    /usr/sbin/scutil --nc stop "$SERVICE_ID" >/dev/null 2>&1 || true
+done
+
+for attempt in {1..20}; do
+    if ! /usr/sbin/scutil --nc list | /usr/bin/grep -F 'com.linlu.hillstoneconnect' | \
+        /usr/bin/grep -Eq '\((Connected|Connecting|Disconnecting)\)'; then
+        break
+    fi
+    /bin/sleep 0.25
+done
+
+CONSOLE_USER=$(/usr/bin/stat -f '%Su' /dev/console)
+if [[ -n "$CONSOLE_USER" && "$CONSOLE_USER" != "root" ]]; then
+    CONSOLE_UID=$(/usr/bin/id -u "$CONSOLE_USER")
+    /bin/launchctl asuser "$CONSOLE_UID" \
+        /usr/bin/sudo -u "$CONSOLE_USER" \
+        /usr/bin/osascript -e 'tell application id "com.linlu.hillstoneconnect" to quit' \
+        >/dev/null 2>&1 || true
+fi
+
+/bin/sleep 0.25
+/usr/bin/killall 'NLVC VPN' >/dev/null 2>&1 || true
+
+exit 0

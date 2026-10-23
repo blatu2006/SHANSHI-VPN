@@ -1,0 +1,196 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* AppModel.swift */; };
+		A10000000000000000000002 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* DashboardView.swift */; };
+		A10000000000000000000003 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* DesignSystem.swift */; };
+		A10000000000000000000004 /* HillstoneConnectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* HillstoneConnectApp.swift */; };
+		A10000000000000000000005 /* LocalCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* LocalCredentialStore.swift */; };
+		A10000000000000000000006 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* RootView.swift */; };
+		A10000000000000000000007 /* SecondaryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* SecondaryViews.swift */; };
+		A10000000000000000000008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* Assets.xcassets */; };
+		A10000000000000000000009 /* libHillstoneProtocol.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000030 /* libHillstoneProtocol.a */; };
+		A1000000000000000000000A /* com.linlu.hillstoneconnect.PacketTunnel.systemextension in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = A20000000000000000000032 /* com.linlu.hillstoneconnect.PacketTunnel.systemextension */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A10000000000000000000011 /* PacketTunnelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000011 /* PacketTunnelProvider.swift */; };
+		A10000000000000000000012 /* NetworkSettingsFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000012 /* NetworkSettingsFactory.swift */; };
+		A10000000000000000000014 /* ChinaDirectRouteCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* ChinaDirectRouteCatalog.swift */; };
+		A10000000000000000000015 /* china_ipv4_cidrs.txt in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000015 /* china_ipv4_cidrs.txt */; };
+		A10000000000000000000016 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000016 /* main.swift */; };
+		A10000000000000000000017 /* PathOptimization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000017 /* PathOptimization.swift */; };
+		A10000000000000000000013 /* libHillstoneProtocol.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000030 /* libHillstoneProtocol.a */; };
+		A10000000000000000000021 /* ByteCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000021 /* ByteCursor.swift */; };
+		A10000000000000000000022 /* ConnectionProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000022 /* ConnectionProfile.swift */; };
+		A10000000000000000000023 /* ControlMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000023 /* ControlMessage.swift */; };
+		A10000000000000000000024 /* ESP.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000024 /* ESP.swift */; };
+		A10000000000000000000025 /* ProtocolFacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000025 /* ProtocolFacts.swift */; };
+		A10000000000000000000026 /* SessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000026 /* SessionState.swift */; };
+		A10000000000000000000027 /* SPA.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000027 /* SPA.swift */; };
+		A10000000000000000000028 /* TunnelNetworkConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000028 /* TunnelNetworkConfiguration.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A30000000000000000000001 = {isa = PBXContainerItemProxy; containerPortal = A90000000000000000000001 /* Project object */; proxyType = 1; remoteGlobalIDString = A80000000000000000000003; remoteInfo = HillstoneProtocol; };
+		A30000000000000000000002 = {isa = PBXContainerItemProxy; containerPortal = A90000000000000000000001 /* Project object */; proxyType = 1; remoteGlobalIDString = A80000000000000000000003; remoteInfo = HillstoneProtocol; };
+		A30000000000000000000003 = {isa = PBXContainerItemProxy; containerPortal = A90000000000000000000001 /* Project object */; proxyType = 1; remoteGlobalIDString = A80000000000000000000002; remoteInfo = HillstonePacketTunnel; };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A40000000000000000000001 /* Embed System Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(SYSTEM_EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (A1000000000000000000000A /* com.linlu.hillstoneconnect.PacketTunnel.systemextension in Embed System Extensions */, );
+			name = "Embed System Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A20000000000000000000001 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		A20000000000000000000004 /* HillstoneConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HillstoneConnectApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000005 /* LocalCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalCredentialStore.swift; sourceTree = "<group>"; };
+		A20000000000000000000006 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A20000000000000000000007 /* SecondaryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryViews.swift; sourceTree = "<group>"; };
+		A20000000000000000000008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A20000000000000000000009 /* XcodeApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "XcodeApp-Info.plist"; sourceTree = "<group>"; };
+		A2000000000000000000000A /* HillstoneConnect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HillstoneConnect.entitlements; sourceTree = "<group>"; };
+		A2000000000000000000000B /* PacketTunnelSystemExtension-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PacketTunnelSystemExtension-Info.plist"; sourceTree = "<group>"; };
+		A2000000000000000000000C /* PacketTunnel.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PacketTunnel.entitlements; sourceTree = "<group>"; };
+		A20000000000000000000011 /* PacketTunnelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketTunnelProvider.swift; sourceTree = "<group>"; };
+		A20000000000000000000012 /* NetworkSettingsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSettingsFactory.swift; sourceTree = "<group>"; };
+		A20000000000000000000014 /* ChinaDirectRouteCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChinaDirectRouteCatalog.swift; sourceTree = "<group>"; };
+		A20000000000000000000015 /* china_ipv4_cidrs.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Resources/china_ipv4_cidrs.txt; sourceTree = "<group>"; };
+		A20000000000000000000016 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ../HillstonePacketTunnelSystem/main.swift; sourceTree = "<group>"; };
+		A20000000000000000000017 /* PathOptimization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathOptimization.swift; sourceTree = "<group>"; };
+		A20000000000000000000021 /* ByteCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteCursor.swift; sourceTree = "<group>"; };
+		A20000000000000000000022 /* ConnectionProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionProfile.swift; sourceTree = "<group>"; };
+		A20000000000000000000023 /* ControlMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlMessage.swift; sourceTree = "<group>"; };
+		A20000000000000000000024 /* ESP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ESP.swift; sourceTree = "<group>"; };
+		A20000000000000000000025 /* ProtocolFacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtocolFacts.swift; sourceTree = "<group>"; };
+		A20000000000000000000026 /* SessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionState.swift; sourceTree = "<group>"; };
+		A20000000000000000000027 /* SPA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPA.swift; sourceTree = "<group>"; };
+		A20000000000000000000028 /* TunnelNetworkConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TunnelNetworkConfiguration.swift; sourceTree = "<group>"; };
+		A20000000000000000000030 /* libHillstoneProtocol.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHillstoneProtocol.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000000000000000000031 /* NLVC VPN.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NLVC VPN.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000000000000000000032 /* com.linlu.hillstoneconnect.PacketTunnel.systemextension */ = {isa = PBXFileReference; explicitFileType = "wrapper.system-extension"; includeInIndex = 0; path = com.linlu.hillstoneconnect.PacketTunnel.systemextension; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A50000000000000000000001 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000009, ); runOnlyForDeploymentPostprocessing = 0; };
+		A50000000000000000000002 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000013, ); runOnlyForDeploymentPostprocessing = 0; };
+		A50000000000000000000003 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A60000000000000000000001 = {
+			isa = PBXGroup;
+			children = (A60000000000000000000002 /* Sources */, A60000000000000000000006 /* Resources */, A60000000000000000000007 /* Packaging */, A60000000000000000000008 /* Products */, );
+			sourceTree = "<group>";
+		};
+		A60000000000000000000002 /* Sources */ = {isa = PBXGroup; children = (A60000000000000000000003, A60000000000000000000004, A60000000000000000000005, ); path = Sources; sourceTree = "<group>"; };
+		A60000000000000000000003 /* HillstoneConnect */ = {isa = PBXGroup; children = (A20000000000000000000001, A20000000000000000000002, A20000000000000000000003, A20000000000000000000004, A20000000000000000000005, A20000000000000000000006, A20000000000000000000007, ); path = HillstoneConnect; sourceTree = "<group>"; };
+		A60000000000000000000004 /* HillstonePacketTunnel */ = {isa = PBXGroup; children = (A20000000000000000000014, A20000000000000000000012, A20000000000000000000017, A20000000000000000000011, A20000000000000000000015, A20000000000000000000016, ); path = HillstonePacketTunnel; sourceTree = "<group>"; };
+		A60000000000000000000005 /* HillstoneProtocol */ = {isa = PBXGroup; children = (A20000000000000000000021, A20000000000000000000022, A20000000000000000000023, A20000000000000000000024, A20000000000000000000025, A20000000000000000000026, A20000000000000000000027, A20000000000000000000028, ); path = HillstoneProtocol; sourceTree = "<group>"; };
+		A60000000000000000000006 /* Resources */ = {isa = PBXGroup; children = (A20000000000000000000008, ); path = Resources; sourceTree = "<group>"; };
+		A60000000000000000000007 /* Packaging */ = {isa = PBXGroup; children = (A20000000000000000000009, A2000000000000000000000A, A2000000000000000000000B /* PacketTunnelSystemExtension-Info.plist */, A2000000000000000000000C, ); path = Packaging; sourceTree = "<group>"; };
+		A60000000000000000000008 /* Products */ = {isa = PBXGroup; children = (A20000000000000000000031, A20000000000000000000032, A20000000000000000000030, ); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A80000000000000000000001 /* HillstoneConnect */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB0000000000000000000001;
+			buildPhases = (A70000000000000000000001, A50000000000000000000001, A70000000000000000000002, A40000000000000000000001 /* Embed System Extensions */, );
+			buildRules = ();
+			dependencies = (AA0000000000000000000001, AA0000000000000000000003, );
+			name = HillstoneConnect;
+			productName = HillstoneConnect;
+			productReference = A20000000000000000000031;
+			productType = "com.apple.product-type.application";
+		};
+		A80000000000000000000002 /* HillstonePacketTunnel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB0000000000000000000002;
+			buildPhases = (A70000000000000000000003, A50000000000000000000002, A70000000000000000000004, );
+			buildRules = ();
+			dependencies = (AA0000000000000000000002, );
+			name = HillstonePacketTunnel;
+			productName = HillstonePacketTunnel;
+			productReference = A20000000000000000000032 /* com.linlu.hillstoneconnect.PacketTunnel.systemextension */;
+			productType = "com.apple.product-type.system-extension";
+		};
+		A80000000000000000000003 /* HillstoneProtocol */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB0000000000000000000003;
+			buildPhases = (A70000000000000000000005, A50000000000000000000003, );
+			buildRules = ();
+			dependencies = ();
+			name = HillstoneProtocol;
+			productName = HillstoneProtocol;
+			productReference = A20000000000000000000030;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A90000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 2650; LastUpgradeCheck = 2650; TargetAttributes = {A80000000000000000000001 = {CreatedOnToolsVersion = 26.5; }; A80000000000000000000002 = {CreatedOnToolsVersion = 26.5; }; A80000000000000000000003 = {CreatedOnToolsVersion = 26.5; }; }; };
+			buildConfigurationList = AB0000000000000000000000;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base, );
+			mainGroup = A60000000000000000000001;
+			productRefGroup = A60000000000000000000008;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (A80000000000000000000001, A80000000000000000000002, A80000000000000000000003, );
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A70000000000000000000002 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000008, ); runOnlyForDeploymentPostprocessing = 0; };
+		A70000000000000000000004 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000015, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A70000000000000000000001 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000001, A10000000000000000000002, A10000000000000000000003, A10000000000000000000004, A10000000000000000000005, A10000000000000000000006, A10000000000000000000007, ); runOnlyForDeploymentPostprocessing = 0; };
+		A70000000000000000000003 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000011, A10000000000000000000012, A10000000000000000000014, A10000000000000000000017, A10000000000000000000016, ); runOnlyForDeploymentPostprocessing = 0; };
+		A70000000000000000000005 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000021, A10000000000000000000022, A10000000000000000000023, A10000000000000000000024, A10000000000000000000025, A10000000000000000000026, A10000000000000000000027, A10000000000000000000028, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AA0000000000000000000001 = {isa = PBXTargetDependency; target = A80000000000000000000003; targetProxy = A30000000000000000000001; };
+		AA0000000000000000000002 = {isa = PBXTargetDependency; target = A80000000000000000000003; targetProxy = A30000000000000000000002; };
+		AA0000000000000000000003 = {isa = PBXTargetDependency; target = A80000000000000000000002; targetProxy = A30000000000000000000003; };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		AC0000000000000000000001 = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = dwarf; ENABLE_TESTABILITY = YES; GCC_OPTIMIZATION_LEVEL = 0; MACOSX_DEPLOYMENT_TARGET = 14.0; ONLY_ACTIVE_ARCH = YES; SDKROOT = macosx; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; SWIFT_VERSION = 6.0; }; name = Debug; };
+		AC0000000000000000000002 = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; COPY_PHASE_STRIP = NO; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; ENABLE_NS_ASSERTIONS = NO; MACOSX_DEPLOYMENT_TARGET = 14.0; SDKROOT = macosx; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_OPTIMIZATION_LEVEL = "-O"; SWIFT_VERSION = 6.0; }; name = Release; };
+		AC0000000000000000000011 = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_ENTITLEMENTS = Packaging/HillstoneConnect.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 20; DEVELOPMENT_TEAM = T84BKD53ZD; ENABLE_HARDENED_RUNTIME = YES; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = Packaging/XcodeApp-Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; MARKETING_VERSION = 1.3.13; PRODUCT_BUNDLE_IDENTIFIER = com.linlu.hillstoneconnect; PRODUCT_NAME = "NLVC VPN"; }; name = Debug; };
+		AC0000000000000000000012 = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_ENTITLEMENTS = "$(NLVC_APP_ENTITLEMENTS)"; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 20; DEVELOPMENT_TEAM = T84BKD53ZD; ENABLE_HARDENED_RUNTIME = YES; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = Packaging/XcodeApp-Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; MARKETING_VERSION = 1.3.13; NLVC_APP_ENTITLEMENTS = Packaging/HillstoneConnect.entitlements; PRODUCT_BUNDLE_IDENTIFIER = com.linlu.hillstoneconnect; PRODUCT_NAME = "NLVC VPN"; PROVISIONING_PROFILE_SPECIFIER = "$(NLVC_APP_PROFILE)"; }; name = Release; };
+		AC0000000000000000000021 = {isa = XCBuildConfiguration; buildSettings = {APPLICATION_EXTENSION_API_ONLY = YES; CODE_SIGN_ENTITLEMENTS = Packaging/PacketTunnel.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 20; DEVELOPMENT_TEAM = T84BKD53ZD; ENABLE_HARDENED_RUNTIME = YES; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = Packaging/PacketTunnelSystemExtension-Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; MARKETING_VERSION = 1.3.13; PRODUCT_BUNDLE_IDENTIFIER = com.linlu.hillstoneconnect.PacketTunnel; PRODUCT_MODULE_NAME = HillstonePacketTunnel; PRODUCT_NAME = com.linlu.hillstoneconnect.PacketTunnel; REGISTER_APP_GROUPS = YES; SKIP_INSTALL = YES; }; name = Debug; };
+		AC0000000000000000000022 = {isa = XCBuildConfiguration; buildSettings = {APPLICATION_EXTENSION_API_ONLY = YES; CODE_SIGN_ENTITLEMENTS = "$(NLVC_EXTENSION_ENTITLEMENTS)"; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 20; DEVELOPMENT_TEAM = T84BKD53ZD; ENABLE_HARDENED_RUNTIME = YES; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = Packaging/PacketTunnelSystemExtension-Info.plist; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks"; MARKETING_VERSION = 1.3.13; NLVC_EXTENSION_ENTITLEMENTS = Packaging/PacketTunnel.entitlements; PRODUCT_BUNDLE_IDENTIFIER = com.linlu.hillstoneconnect.PacketTunnel; PRODUCT_MODULE_NAME = HillstonePacketTunnel; PRODUCT_NAME = com.linlu.hillstoneconnect.PacketTunnel; PROVISIONING_PROFILE_SPECIFIER = "$(NLVC_EXTENSION_PROFILE)"; REGISTER_APP_GROUPS = YES; SKIP_INSTALL = YES; }; name = Release; };
+		AC0000000000000000000031 = {isa = XCBuildConfiguration; buildSettings = {BUILD_LIBRARY_FOR_DISTRIBUTION = NO; DEFINES_MODULE = YES; MACH_O_TYPE = staticlib; PRODUCT_NAME = HillstoneProtocol; SKIP_INSTALL = YES; }; name = Debug; };
+		AC0000000000000000000032 = {isa = XCBuildConfiguration; buildSettings = {BUILD_LIBRARY_FOR_DISTRIBUTION = NO; DEFINES_MODULE = YES; MACH_O_TYPE = staticlib; PRODUCT_NAME = HillstoneProtocol; SKIP_INSTALL = YES; }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AB0000000000000000000000 = {isa = XCConfigurationList; buildConfigurations = (AC0000000000000000000001, AC0000000000000000000002, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		AB0000000000000000000001 = {isa = XCConfigurationList; buildConfigurations = (AC0000000000000000000011, AC0000000000000000000012, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		AB0000000000000000000002 = {isa = XCConfigurationList; buildConfigurations = (AC0000000000000000000021, AC0000000000000000000022, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		AB0000000000000000000003 = {isa = XCConfigurationList; buildConfigurations = (AC0000000000000000000031, AC0000000000000000000032, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = A90000000000000000000001 /* Project object */;
+}

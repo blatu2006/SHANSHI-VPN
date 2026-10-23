@@ -1,0 +1,36 @@
+# macOS and Xcode user-local state
+.DS_Store
+**/.DS_Store
+*.xcuserstate
+xcuserdata/
+**/xcuserdata/
+DerivedData/
+
+# Swift/Xcode build products and caches
+.build/
+.cache/
+build/
+dist/
+
+# Local application and legacy-client archives
+archive/
+certs/
+
+# Apple signing material and distributable artifacts
+.apple-signing/
+*.p12
+*.pfx
+*.cer
+*.crt
+*.key
+*.pem
+*.provisionprofile
+*.mobileprovision
+*.pkg
+*.dmg
+
+# Local credentials and environment overrides
+.env
+.env.*
+config.local.plist
+notarytool-credentials*
